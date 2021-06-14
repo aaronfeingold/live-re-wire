@@ -1,21 +1,26 @@
-const axios = require('axios')
 const cheerio = require('cheerio');
+const puppeteer = require('puppeteer')
 
 const url = 'https://www.wwoz.org/calendar/livewire-music'
 const config = {
   headers: {'Access-Control-Allow-Origin': '*'}
 }
 
-const btn = () => document.getElementById('btn')
-const live_re_wire = document.getElementsByClassName('live-re-wire')
+callOnLoad()
 
-btn.addEventListener('click', getArtistEvents())
-
+function callOnLoad() {
+  getArtistEvents()
+}
 
 function getArtistEvents() {
-  axios(url, config)
-  .then(response =>{
-    const html = response.data;
+ puppeteer
+  .launch()
+  .then(browser => browser.newPage())
+  .then(async page => {
+    await page.goto(url, config);
+    return await page.content();
+  })
+  .then(html =>{
     const $ = cheerio.load(html);
     const links = $('a');
     const artist_events = {}
@@ -30,7 +35,7 @@ function getArtistEvents() {
         }
     });
         console.log(artist_events);
-        
+      debugger;
       ArtistEvent.createArtistEvents(artist_events);
       ArtistEvent.displayArtistEvents();
     })
@@ -65,9 +70,8 @@ class ArtistEvent {
   }
 
   display() {
-    const div = document.createElement('div')
-    const p = document.createElement('p')
-    p.innerText = `${this.artist_name} ${this.event_href}`
-    div.appendChild(p)
+    let p = `${this.artist_name} ${this.event_href}`
+    console.log(p)
   }
+
 }
