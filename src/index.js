@@ -2,6 +2,9 @@ const axios = require('axios')
 const cheerio = require('cheerio');
 
 const url = 'https://www.wwoz.org/calendar/livewire-music'
+const config = {
+  headers: {'Access-Control-Allow-Origin': '*'}
+}
 
 const btn = () => document.getElementById('btn')
 const live_re_wire = document.getElementsByClassName('live-re-wire')
@@ -10,7 +13,7 @@ btn.addEventListener('click', getArtistEvents())
 
 
 function getArtistEvents() {
-  axios(url, "Access-Control-Allow-Origin")
+  axios(url, config)
   .then(response =>{
     const html = response.data;
     const $ = cheerio.load(html);
